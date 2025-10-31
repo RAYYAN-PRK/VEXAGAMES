@@ -1,0 +1,536 @@
+<?php
+global $poko, $zon, $site_url;
+if (isset($zon['page'][1])) {
+    $game_name = str_replace("-", " ", isset($zon['page'][1]) ?? '');
+    if (count(dataBy("SELECT * FROM zon_games WHERE game_name='$game_name'")) > 0) {
+        $poki['game_data'] = dataBy("SELECT * FROM zon_games WHERE game_name='$game_name'")[0];
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="<?php echo $zon['config']['site_keywords'] ?>" />
+    <?php if ($zon['page'][0] == '') { ?>
+        <?php # meta tags for home page                          ?>
+        <meta name="description" content="<?php echo $zon['config']['site_desc'] ?>" />
+        <link rel="canonical" href="<?php echo $site_url ?>" />
+        <meta property="og:title" content="<?php echo $zon['config']['site_title'] ?>">
+        <meta property="og:type" content="website">
+        <meta property="og:image" content="<?php echo $site_url . 'static/logo/' . $zon['config']['site_logo_light'] ?>">
+        <meta property="og:url" content="<?php echo $site_url ?>">
+        <meta property="og:description" content="<?php echo $zon['config']['site_desc'] ?>">
+        <meta property="og:site_name" content="<?php echo $zon['config']['site_name'] ?>">
+        <meta property="og:image:width" content="630" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:site" content="@<?php echo strtolower($zon['config']['site_name']) ?>">
+        <meta name="twitter:creator" content="@<?php echo strtolower($zon['config']['site_name']) ?>">
+        <meta name="twitter:title" content="<?php echo $zon['config']['site_title'] ?>">
+        <meta name="twitter:description" content="<?php echo $zon['config']['site_desc'] ?>">
+        <meta name="twitter:image" content="<?php echo $site_url . 'static/logo/' . $zon['config']['site_logo_light'] ?>">
+        <meta name="twitter:image:alt" content="<?php echo $zon['config']['site_title'] ?>">
+        <meta name="twitter:domain" content="<?php echo $_SERVER['HTTP_HOST'] ?>">
+    <?php } ?>
+     <?php if (isCategory($zon['page'][0])) { ?>
+     <link rel="canonical" href="<?php echo $site_url ?>/<?= $zon['page'][0] ?>" />
+     <?php } ?>
+          <?php if ($zon['page'][0] == 'c') { ?>
+     <link rel="canonical" href="<?php echo $site_url ?>/c/<?= $zon['page'][1] ?>" />
+     <?php } ?>
+    <?php if ($zon['page'][0] == 'g') {
+        $play_title = $zon['config']['play_desc'];
+
+        if ($zon['page'][0] == 'single') {
+            $game = getGamesById($zon['page'][1]);
+        }
+        if ($zon['page'][0] == 'g') {
+            $game_name = urldecode(str_replace("-", " ", $zon['page'][1]));
+            $game = dataBy("SELECT * FROM zon_games WHERE game_name='$game_name'")[0];
+            // $game = getGamesById($zon['page'][2]);
+        }
+
+        $game_desc = str_replace("[name]", $game['game_name'], $play_title);
+        $game['game_description'] = $game_desc;
+        ?>
+        <meta name="description" content="<?php echo $game_desc ?>" />
+        <link rel="canonical" href="<?php echo $site_url . 'game/' . makeSlug($game['game_name']) . '/' . $game['id'] ?>" />
+        <meta property="og:title" content="<?php echo $game['game_name'] ?>">
+        <meta property="og:type" content="website">
+        <meta property="og:image" content="<?php echo $game['game_image_url'] ?>" />
+        <meta property="og:url"
+            content="<?php echo $site_url . 'game/' . makeSlug($game['game_name']) . '/' . $game['id'] ?>">
+        <meta property="og:description" content="<?php echo $game['game_description'] ?>">
+        <meta property="og:site_name" content="<?php echo $zon['config']['site_name'] ?>">
+        <meta property="og:image:width" content="630" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:site" content="@<?php echo strtolower($zon['config']['site_name']) ?>">
+        <meta name="twitter:creator" content="@<?php echo strtolower($zon['config']['site_name']) ?>">
+        <meta name="twitter:title" content="<?php echo $game['game_name'] ?>">
+        <meta name="twitter:description" content="<?php echo $game['game_description'] ?>">
+        <meta name="twitter:image" content="<?php echo $game['game_image_url'] ?>">
+        <meta name="twitter:image:alt" content="<?php echo $game['game_name'] ?>">
+        <meta name="twitter:domain" content="<?php echo $_SERVER['HTTP_HOST'] ?>">
+    <?php } ?>
+    <?php if ($zon['page'][0] == 'new-games' || ($zon['page'][0] == 'archive' && $zon['page'][1] == 'newest')) { ?>
+        <meta name="description" content="<?php echo $zon['config']['games_desc'] ?>" />
+    <?php } ?>
+    <?php if ($zon['page'][0] == 'popular-games' || ($zon['page'][0] == 'archive' && $zon['page'][1] == 'popular')) { ?>
+        <meta name="description" content="<?php echo $zon['config']['games_desc'] ?>" />
+    <?php } ?>
+    <?php if ($zon['page'][0] == 'games') { ?>
+        <meta name="description" content="<?php echo $zon['config']['games_desc'] ?>" />
+    <?php } ?>
+    <?php if ($zon['page'][0] == 'category' || $zon['page'][0] == 'game' && count($zon['page']) == 2) {
+        $category_desc = $zon['config']['category_desc'];
+        $title = str_replace("[name]", $_GET['n'] ?? '', $category_desc);
+        ?>
+        <meta name="description" content="<?php echo $title ?>" />
+    <?php } ?>
+    <meta name="robots" content="index, follow">
+    <link rel="shortcut icon" href="<?php echo $site_url . 'static/img/logo/' . $zon['config']['site_favicon'] ?>"
+        type="image/x-icon">
+    <title>
+        <?php getTitle(); ?>
+    </title>
+    <link rel="stylesheet" href="<?php echo $site_url ?>themes/<?php echo $zon['config']['theme'] ?>/css/style.css">
+    <script src="<?php echo $site_url ?>js/tailwind.js"></script>
+    <link rel="stylesheet" href="<?php echo $site_url ?>css/animate.css" />
+    <script src="<?php echo $site_url ?>js/wow.min.js"></script>
+    <script>poko = { url: "<?php echo $site_url ?>" }</script>
+    <script src="<?php echo $site_url ?>js/toast.min.js"></script>
+    <link rel="stylesheet" href="<?php echo $site_url ?>css/toast.min.css" />
+    <?php echo $zon['config']['head_code'] ?>
+    <style>
+        :root {
+            --theme-color:
+                <?php echo $zon['config']['site_color'] ?>
+            ;
+        }
+    </style>
+</head>
+
+<body style="background-image: url('<?= $site_url ?>static/img/bg.png')">
+    <div class="offcanvas">
+        <div class="offcanvas-menu scroll-none">
+            <div class="flex sticky top-[15px] mt-4 z-40">
+                <form action="" class="live-search mr-10 w-full flex items-center bg-white p-1 rounded-lg">
+                    <button onclick="this.parentNode.parentNode.parentNode.parentNode.classList.remove('active')"
+                        type="button" class="px-4 py-2 for-desktop">
+                        <img class="rounded-full" width="40"
+                            src="<?= $site_url ?>static/img/logo/<?= $zon['config']['site_logo_sm'] ?>" />
+                    </button>
+                    <button onclick="this.parentNode.parentNode.parentNode.parentNode.classList.remove('active')"
+                        type="button" class="px-4 py-2 rounded-lg for-mobile flex gap-1 w-[150px] items-center">
+                        <svg width="20px" height="20px" stroke-width="3" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg" color="#8c8c8c">
+                            <path d="M15 6L9 12L15 18" stroke="#8c8c8c" stroke-width="4" stroke-linecap="round"
+                                stroke-linejoin="round"></path>
+                        </svg>
+                        <img width="40" class="rounded-full for-mobile"
+                            src="<?= $site_url ?>static/img/logo/<?= $zon['config']['site_logo_sm'] ?>" />
+                    </button>
+                    <input type="text" placeholder="What are you playing today?"
+                        class="w-full mx-3 text-[#002b50] text-xl font-bold outline-none h-[40px] block">
+                    <button class="px-4 live-search-attached-button" disabled="true" type="button">
+                        <svg width="28px" height="28px" viewBox="0 0 24 24" stroke-width="1.1" fill="none"
+                            xmlns="http://www.w3.org/2000/svg" color="#8c8c8c">
+                            <path d="M17 17L21 21" stroke="#8c8c8c" stroke-width="3" stroke-linecap="round"
+                                stroke-linejoin="round"></path>
+                            <path
+                                d="M3 11C3 15.4183 6.58172 19 11 19C13.213 19 15.2161 18.1015 16.6644 16.6493C18.1077 15.2022 19 13.2053 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11Z"
+                                stroke="#8c8c8c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </button>
+                </form>
+                <button onclick="this.parentNode.parentNode.parentNode.classList.remove('active')"
+                    class="close-button bg-white h-[70px] flex justify-center items-center rounded-full w-[70px] absolute top-[-10px] right-[-40px]">
+                    <svg width="30px" height="30px" stroke-width="1.1" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg" color="#8c8c8c">
+                        <path d="M15 6L9 12L15 18" stroke="#8c8c8c" stroke-width="3" stroke-linecap="round"
+                            stroke-linejoin="round"></path>
+                    </svg>
+                </button>
+            </div>
+            <div
+                class="search-error wow <?php echo $zon['config']['animate_class'] ?> hidden p-4 bg-white mt-6 mx-2 mb-2">
+                <h5 class="font-bold text-lg">Hmm, nothing’s coming up for that.</h5>
+                <p class="text-sm text-gray-600 font-medium">Try searching for something else or play one of these great
+                    games.</p>
+            </div>
+            <div id="live-search-result" class="m-grid-start mt-4"></div>
+            <div id="offconvas-content">
+                <div class="flex flex-wrap RightFade relative gap-4 mt-4">
+                    <?php foreach (getCategory(9) as $category) { ?>
+                        <a href="<?= $site_url . urlencode(makeSlug($category['name'])) ?>" class="category-link-box wow <?php echo $zon['config']['animate_class'] ?> shadow-lg hover:bg-[var(--theme-color)] hover:text-white bg-white px-6 py-3 uppercase text-xs font-bold rounded-full">
+                            <?= $category['name'] ?>
+                        </a>
+                    <?php } ?>
+                </div>
+                <div class="recent-uploaded-games">
+                    <h3 class="font-bold text-xl mt-6 mb-4">Recently added games</h3>
+                    <div class="m-grid-start">
+                        <?php foreach (dataBy("SELECT * FROM zon_games ORDER BY id DESC LIMIT 13") as $game) { ?>
+                            <div class="m-game-card wow <?php echo $zon['config']['animate_class'] ?>">
+                                <a class="m-game-link" href="<?= $site_url ?>g/<?= makeSlug($game['game_name']) ?>">
+                                    <picture style="background-image: url('<?= $game['game_image_url'] ?>')"
+                                        class="m-game-thumbnail">
+                                        <div class="m-game-details">
+                                            <p>
+                                                <?= $game['game_name'] ?>
+                                            </p>
+                                        </div>
+                                    </picture>
+                                </a>
+                            </div>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mvn-container px-3">
+        <?= $poko['content'] ?>
+    </div>
+
+    <footer class="p-4 mt-20 relative bg-white ">
+        <div class="mx-4">
+            <div class="mvn-container h-not-full flex justify-between items-center">
+                <div class="flex items-center">
+                    <img src="<?= $site_url ?>static/img/logo/<?= $zon['config']['site_logo_light'] ?>" width="100" />
+                    <h3 class="ml-6 text-xl font-bold text-[#002b50]">Let the world play</h3>
+                </div>
+                <div class="flex footer-links">
+                    <?php foreach (getPages() as $page) { ?>
+                        <a class="underline capitalize text-lg text-gray-600 mx-2"
+                            href="<?= $site_url . 'c/' . urlencode(makeSlug($page['title'])) ?>">
+                            <?= $page['title'] ?>
+                        </a>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <div style="opacity: 0; display: none; visibility: hidden;" id="ad-700x100"><?php echo getAd("1", "code") ?></div>
+    <div style="opacity: 0; display: none; visibility: hidden;" id="ad-400x400-1"><?php echo getAd("1,1", "code") ?></div>
+    <div style="opacity: 0; display: none; visibility: hidden;" id="ad-400x400-2"><?php echo getAd("1,2", "code") ?></div>
+
+    <script>
+        var game_frame = document.getElementById("game");
+        if (game_frame) {
+            var game_frame_src = game_frame.src;
+            if (game_frame_src.includes("gamedistribution")) {
+                game_frame.src += "?gd_sdk_referrer_url=https://gamedistribution.com/games/cooking-festival";
+            }
+        }
+
+        const draggable = document.getElementById('draggable');
+        if (draggable) {
+            let offsetY;
+
+            draggable.addEventListener('mousedown', startDragging);
+            draggable.addEventListener('touchstart', startDragging);
+
+            draggable.addEventListener('mouseup', stopDragging);
+            draggable.addEventListener('touchend', stopDragging);
+
+            function startDragging(event) {
+                setTimeout(() => {
+                    if (event.type === 'mousedown') {
+                        offsetY = event.clientY - draggable.getBoundingClientRect().top;
+                        document.addEventListener('mousemove', drag);
+                    } else if (event.type === 'touchstart') {
+                        offsetY = event.touches[0].clientY - draggable.getBoundingClientRect().top;
+                        document.addEventListener('touchmove', drag);
+                    }
+                    // Prevent default behavior to avoid scrolling while dragging on touch devices
+                    event.preventDefault();
+                }, 900)
+            }
+
+            function drag(event) {
+                let clientY;
+                if (event.type === 'mousemove') {
+                    clientY = event.clientY;
+                } else if (event.type === 'touchmove') {
+                    clientY = event.touches[0].clientY;
+                }
+                const newY = clientY - offsetY;
+                draggable.style.top = `${newY}px`;
+            }
+
+            function stopDragging() {
+                document.removeEventListener('mousemove', drag);
+                document.removeEventListener('touchmove', drag);
+            }
+        }
+
+        var is_fullscreen = false;
+        var gameContainer = document.querySelector(".gameplay-container") || document.documentElement;
+        function open_fullscreen() {
+            // let game = document.getElementById("zonFrame");
+            var game = document.getElementById("game");
+
+            if (is_fullscreen) {
+                // Exit fullscreen
+                is_fullscreen = false;
+                gameContainer.classList.remove("full");
+                gameContainer.classList.remove("on-frame");
+                exitFullscreen();
+            } else {
+                // Enter fullscreen
+                is_fullscreen = true;
+                enterFullscreen(gameContainer);
+                gameContainer.classList.add("full");
+                gameContainer.classList.add("on-frame");
+            }
+        }
+
+        function enterFullscreen(element) {
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) { /* Firefox */
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) { /* IE/Edge */
+                element.msRequestFullscreen();
+            }
+        }
+
+        function exitFullscreen() {
+            var doc = document || documentElement;
+            if (doc.exitFullscreen) {
+                doc.exitFullscreen();
+            } else if (doc.mozCancelFullScreen) { /* Firefox */
+                doc.mozCancelFullScreen();
+            } else if (doc.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                doc.webkitExitFullscreen();
+            } else if (doc.msExitFullscreen) { /* IE/Edge */
+                doc.msExitFullscreen();
+            }
+
+            gameContainer.classList.remove("full");
+            console.log("Exiting fullscreen mode");
+        }
+
+        // Event listener for exiting fullscreen
+        document.addEventListener("fullscreenchange", function () {
+            if (!document.fullscreenElement) {
+                // Update UI when exiting fullscreen
+                gameContainer.classList.remove("full");
+                gameContainer.classList.remove("on-frame");
+
+                if (is_fullscreen) {
+                    document.getElementById("full_screen").click();
+                }
+            }
+        });
+
+
+        function fullScreen() {
+            var game = document.getElementById("game");
+            var gameContainer = document.querySelector(".gameplay-container");
+            gameContainer.classList.toggle("full");
+        }
+
+        var games = document.querySelectorAll(".m-grid-start.home .m-game-card");
+        var GamePageGames = document.querySelectorAll(".m-grid-start.game-page .m-game-card");
+        var liveSearch = document.querySelector(".live-search input");
+        var liveSearchoffcanvasAttachedButton = document.querySelector(".live-search .live-search-attached-button");
+
+        if (games.length > 0 && games !== null) {
+            // for game card sizes
+            for (let i = 0; i < games.length; i++) {
+                const game = games[i];
+
+                var CardSize = games[i].getAttribute("data-card-size");
+                var IsFeaturedGame = games[i].getAttribute("data-game-f");
+                if (CardSize === 'md') {
+                    games[i].classList.add("md")
+                }
+
+                if (IsFeaturedGame === 'Yes') {
+                    games[i].classList.add("lg")
+                }
+
+            }
+
+            // <?php // print_r(getAd("1", "code"))  ?>
+
+            // for advertisements 
+            for (let i = 0; i < GamePageGames.length; i++) {
+                const game = games[i];
+                <?php if (getAd("1", 'status') == 0) { ?>
+                    if (i == 50) {
+                        games[i].classList.add("_700x700");
+                        games[i].classList.add("advert-space");
+                        games[i].classList.add("not-hover");
+                        games[i].innerHTML = document.getElementById("ad-700x100").innerHTML;
+                    }
+                <?php } ?>
+
+                <?php if (getAd("1,1", 'status') == 0) { ?>
+                    if (i == 2) {
+                        games[i].classList.add("_400x400");
+                        games[i].classList.add("advert-space");
+                        games[i].classList.add("not-hover");
+                        games[i].innerHTML = document.getElementById("ad-400x400-1").innerHTML;
+                    }
+                <?php } ?>
+
+                <?php if (getAd("1,2", 'status') == 0) { ?>
+                    if (i == 79) {
+                        games[i].classList.add("_400x400");
+                        games[i].classList.add("advert-space");
+                        games[i].classList.add("not-hover");
+                        games[i].innerHTML = document.getElementById("ad-400x400-2").innerHTML;
+                    }
+                <?php } ?>
+
+            }
+        }
+
+        if (liveSearch !== null || liveSearch !== undefined) {
+            var searchIcon = `<svg width="20px" height="20px" viewBox="0 0 24 24" stroke-width="1.1" fill="none" xmlns="http://www.w3.org/2000/svg" color="#8c8c8c"><path d="M17 17L21 21" stroke="#8c8c8c" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 11C3 15.4183 6.58172 19 11 19C13.213 19 15.2161 18.1015 16.6644 16.6493C18.1077 15.2022 19 13.2053 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11Z" stroke="#8c8c8c" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
+            var xIcon = `<svg width="20px" height="20px" stroke-width="1.1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#8c8c8c"><path d="M6.75827 17.2426L12.0009 12M17.2435 6.75736L12.0009 12M12.0009 12L6.75827 6.75736M12.0009 12L17.2435 17.2426" stroke="#8c8c8c" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
+            const clearInputValue = () => {
+                liveSearch.value = '';
+                liveSearchoffcanvasAttachedButton.innerHTML = searchIcon;
+                liveSearchoffcanvasAttachedButton.disabled = true;
+                document.getElementById("live-search-result").style.display = "none";
+                document.getElementById("offconvas-content").style.display = "block";
+                document.querySelector(".search-error").style.display = "none";
+                return true;
+            }
+            liveSearch.addEventListener("keyup", () => {
+                if (liveSearch.value.length > 0) {
+                    liveSearchoffcanvasAttachedButton.addEventListener("click", clearInputValue);
+                    liveSearchoffcanvasAttachedButton.innerHTML = xIcon;
+                    liveSearchoffcanvasAttachedButton.disabled = false;
+                } else {
+                    liveSearchoffcanvasAttachedButton.removeEventListener("click", clearInputValue);
+                    liveSearchoffcanvasAttachedButton.innerHTML = searchIcon;
+                    liveSearchoffcanvasAttachedButton.disabled = true;
+                }
+            })
+        }
+    </script>
+    <script> new WOW().init();  </script>
+    <script src="<?php echo $site_url ?>themes/<?php echo $zon['config']['theme'] ?>/js/main.js"></script>
+    <script src="<?php echo $site_url ?>js/jquery.min.js"></script>
+    <script>
+        $(document).on("click", (event) => {
+            if (!event.target.closest(".offcanvas-menu") && !event.target.closest(".open-menu") && !event.target.closest(".live-search-attached-button")) {
+                $(".offcanvas").removeClass("active");
+            }
+
+            if (!event.target.closest(".more-option") && !event.target.closest(".more-opt-button")) {
+                $(".more-option").removeClass("active");
+            }
+        });
+
+
+        $(".live-search input").on("keyup", (event) => {
+            if (event.target.value.length > 0) {
+                LoadGameData();
+                $("#live-search-result").show();
+                $("#offconvas-content").hide();
+            } else {
+                $("#live-search-result").hide();
+                $(".search-error").hide();
+                $("#offconvas-content").show();
+            }
+        })
+
+        function LoadGameData() {
+            // var sLoader = $(".live-search-loader");
+
+            var sinput = $(".live-search input");
+            // setTimeout(() => {
+            $.post("<?php echo $site_url ?>xhr/live-search.php", {
+                query: sinput.val() ? sinput.val() : 'a',
+            }, (data) => {
+                if (data == "0") {
+                    $(".search-error").show();
+                    $("#live-search-result").hide();
+                    $("#offconvas-content").show();
+                } else {
+                    $(".search-error").hide();
+                    $("#live-search-result").show();
+                    $("#offconvas-content").hide();
+                    $("#live-search-result").html(data);
+                }
+                // $("#live-games").html(data);
+                // sLoader.hide();
+            });
+
+            // page_no++;
+            // }, 1500);
+        }
+
+
+        $("#Like").on("click", () => {
+            $.post(`${window.poki.url}xhr/like.php`, {
+                gi: window.poki.game_id
+            }, (data) => {
+                var data = JSON.parse(data);
+                $("#Like").toggleClass("active");
+                $("#Dislike").removeClass("active");
+                $("#Like_Count").text(data.like);
+                $("#Dislike_Count").text(data.dislike);
+            });
+        });
+
+        $("#Dislike").on("click", () => {
+            $.post(`${window.poki.url}xhr/dislike.php`, {
+                gi: window.poki.game_id
+            }, (data) => {
+                var data = JSON.parse(data);
+                // if (data == 1) {
+                $("#Like").removeClass("active");
+                // }
+                $("#Dislike").toggleClass("active");
+                $("#Like_Count").text(data.like);
+                $("#Dislike_Count").text(data.dislike);
+                console.log(data);
+            });
+        });
+
+        $(".send-report").on("click", () => {
+            var subject = $("#report_textarea").val();
+            var game_id = window.poki.game_id;
+            var game_name = window.poki.game_name;
+
+            $.post(`${window.poki.url}xhr/report.php`, {
+                problem: subject,
+                game_id: game_id,
+                game_name: game_name
+            }, (data) => {
+                if (data == 1) {
+                    $(".report-popup").removeClass("active");
+                    $(".thank-you-popup").addClass("active");
+                    setTimeout(() => {
+                        $(".thank-you-popup").removeClass("active");
+                    }, 3000);
+                }
+                // var data = JSON.parse(data);
+                // // if (data == 1) {
+                // $("#Like").removeClass("active");
+                // // }
+                // $("#Dislike").toggleClass("active");
+                // $("#Like_Count").text(data.like);
+                // $("#Dislike_Count").text(data.dislike);
+                // console.log(data);
+            });
+        })
+    </script>
+</body>
+
+</html>

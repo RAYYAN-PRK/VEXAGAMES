@@ -1,0 +1,83 @@
+body {
+  background-color: #f4f5f7;
+}
+.list li {
+  list-style-type: none;
+}
+
+.text-xs {
+  font-size: 11px;
+}
+
+.show {
+  display: flex !important;
+}
+
+.transition-sm {
+  transition: 0.3s;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  height: 100%;
+  width: 100px;
+  border: 0;
+  color: #777;
+}
+
+/* .block {
+    display: block ;
+} */
+
+.game-add-modal {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  left: 0;
+  height: 100%;
+}
+
+.game-add-modal .overlay {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    left: 0;
+    height: 100%;
+    background: #0000008c;
+    z-index: -1;
+}
+
+.game-add-modal .game-add-dialog {
+    background: #fff;
+    z-index: 1;
+    width: 400px;
+    height: auto;
+    min-height: 400px;
+    max-height: 500px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.game-add-modal .game-add-dialog .form {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+}
+
+.game-add-modal .game-add-dialog .form input {
+  width: 100%;
+  background: transparent;
+  height: 35px;
+}
+
+.game-add-modal .game-add-dialog .form button {
+  padding: 0 10px;
+  background: transparent;
+}

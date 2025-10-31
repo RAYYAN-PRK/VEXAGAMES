@@ -1,0 +1,16 @@
+<?php global $site_url, $zon; ?>
+<h1 class="text-3xl mb-8 mt-3 block font-semibold page-heading" >Blogs</h1>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <?php foreach (getBlogs() as $blog) { ?>
+        <div class="rounded-lg wow <?php echo $zon['config']['animate_class'] ?> shadow-md">
+            <img src="<?php echo $site_url . 'static/blog/' . $blog['blog_image'] ?>" style="height: 180px;" class="object-cover w-full rounded-lg overflow-hidden" />
+            <div class="p-5">
+                <a href="<?php echo $site_url . 'blog/' . makeSlug($blog['blog_title']) . '/' . $blog['id'] ?>">
+                    <h2 class="text-xl hover:text-[var(--zon-theme-color)] line-clamp-2 font-semibold"><?= $blog['blog_title'] ?></h2>
+                </a>
+                <span class="text-xs " style="color: var(--zon-muted-color);" ><?= $blog['blog_date'] ?></span>
+                <p class=" text-sm line-clamp-3 " style="color: var(--zon-muted-color);"><?= $blog['blog_desc'] ?></p>
+            </div>
+        </div>
+    <?php } ?>
+</div>

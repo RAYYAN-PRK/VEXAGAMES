@@ -1,0 +1,49 @@
+<?php
+global $zon, $site_url;
+$category_name = str_replace("-", " ", trim(urldecode($zon['page'][0])));
+$data = dataBy("SELECT * FROM zon_category WHERE name='$category_name'")[0];
+
+?>
+<div class="category-container mx-2">
+    <div class="m-grid-start home">
+        <?php echo LoadFile('navbar/content') ?>
+        <div class="category-name">
+            <?= $data['name'] ?> Games
+        </div>
+        <?php foreach (GameByCategoryWise($category_name) as $game) { ?>
+            <div data-card-size="<?= $game['game_card_size'] == 'md' ? 'md' : '' ?>"
+                data-game-f="<?= $game['is_featured'] == 1 ? 'Yes' : 'No' ?>"
+                class="m-game-card wow <?php echo $zon['config']['animate_class'] ?>">
+                <a class="m-game-link" href="<?= $site_url ?>g/<?= makeSlug($game['game_name']) ?>">
+                    <picture style="background-image: url('<?= $game['game_image_url'] ?>')" class="m-game-thumbnail">
+                        <div class="m-game-details">
+                            <p>
+                                <?= $game['game_name'] ?>
+                            </p>
+                        </div>
+                    </picture>
+                </a>
+            </div>
+        <?php } ?>
+    </div>
+</div>
+
+
+<div class="mx-2" style="visibility: hidden;">
+<div class="html-content bg-white mt-10 p-6">
+<div class="flex gap-2 mt-2 mb-2">
+<a href="<?= $site_url ?>" class="text-sm brdcm-style">Game</a>
+<div style="margin-top: 2px;"><svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M5.5 5L11.7929 11.2929C12.1834 11.6834 12.1834 12.3166 11.7929 12.7071L5.5 19" stroke="#054a91" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M13.5 5L19.7929 11.2929C20.1834 11.6834 20.1834 12.3166 19.7929 12.7071L13.5 19" stroke="#054a91" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></div>
+<a href="<?= $site_url . urlencode(makeSlug($data['name'])) ?>" class="text-sm brdcm-style"><?php echo $category_name ?></a>
+</div>
+<h2 class="text-md font-bold">
+<?= $data['name'] ?> Games
+</h2>
+<div class="html-content">
+<?= $data['description'] ?>
+</div>
+</div>
+</div>

@@ -1,0 +1,83 @@
+<?php
+global $zon, $site_url;
+foreach (DynamicSection() as $section) { ?>
+    <section class="section-wise wow <?php echo $zon['config']['animate_class'] ?> mb-6">
+        <div class="heading flex justify-between">
+            <h2 class="text-2xl font-bold">
+                <?= $section['section_name'] ?>
+            </h2>
+            <a href="<?php echo $site_url ?>category/?n=<?php echo urlencode(getCategoryNameById($section['section_category'])) ?>"
+                class="capitalize text-sm">more</a>
+        </div>
+
+        <div class="m-slider-container relative ">
+            <div data-target=".slider-container-<?= $section['id'] ?>" class="pagination-container">
+                <div class="left-pagination Pagination">
+                    <button>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="none" stroke-width="1.5"
+                            viewBox="0 0 24 24" color="#000000">
+                            <path style="stroke: var(--zon-common-text-color);" stroke="#000000" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" d="m15 6-6 6 6 6"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="right-pagination Pagination">
+                    <button>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="none" stroke-width="1.5"
+                            viewBox="0 0 24 24" color="#000000">
+                            <path style="stroke: var(--zon-common-text-color);" stroke="#000000" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="slider-container-<?= $section['id'] ?> relative overflow-x-scroll scroll-none mt-3">
+                <div style="width: calc(300px * <?php echo $zon['config']['section_games_limit'] ?>)"
+                    class="silders flex gap-6">
+                    <?php foreach (GameByCategoryName($section['section_category'], $zon['config']['section_games_limit']) as $game) { ?>
+                        <div class="game-card">
+                            <img src="<?php echo $game['game_banner_url'] == '' ? $game['game_image_url'] : $game['game_banner_url'] ?>" />
+                            <div class="game-details gap-4">
+                                <a href="<?php echo $site_url . 'game/' . makeSlug($game['game_name']) . '/' . $game['id'] ?>"
+                                    class="text-md line-clamp-2 font-semibold">
+                                    <?= $game['game_name'] ?>
+                                </a>
+                                <a style="color: var(--zon-muted-color);" class="text-sm"
+                                    href="<?php echo $site_url ?>category/?n=<?= urlencode($game['game_category']) ?>">
+                                    <?= $game['game_category'] ?>
+                                </a>
+                                <div
+                                    class="game-meta rounded-lg mt-3 w-fit bg-[var(--zon-gmeta-bg-color)] px-2 py-0.5 flex items-center gap-2">
+                                    <span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="19px" height="19px" fill="none"
+                                            stroke-width="1.1" viewBox="0 0 24 24" color="#000000">
+                                            <path stroke="#000000" stroke-width="1.1" stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M17.5 17.5c2.5 3.5 6.449.915 5.5-2.5-1.425-5.129-2.2-7.984-2.603-9.492A2.032 2.032 0 0 0 18.438 4H5.562c-.918 0-1.718.625-1.941 1.515C2.78 8.863 2.033 11.802 1.144 15c-.948 3.415 3 6 5.5 2.5">
+                                            </path>
+                                            <path stroke="#000000" stroke-width="1.1" stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M16 4v2a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V4M8 16a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM16 16a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z">
+                                            </path>
+                                        </svg>
+                                    </span>
+                                    <span class="text-xs">
+                                        <?= $game['game_played'] ?> Plays
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
+    </section>
+<?php } ?>
+
+<?php if (getAd('0,1', 'status') == 0) { ?>
+    <div class="p-2 mt-4">
+        <div class="ads wow <?php echo $zon['config']['animate_class'] ?> flex justify-center">
+            <?php echo getAd('0,1', 'code') ?>
+        </div>
+    </div>
+<?php } ?>

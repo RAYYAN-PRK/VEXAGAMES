@@ -1,0 +1,108 @@
+<?php global $zon, $site_url;
+$blog = blogById($zon['page'][2]);
+$blog_url = $site_url . 'blog/' . makeSlug($blog['blog_title']) . '/' . $blog['id'];
+?>
+<div class="bg-blog-banner">
+    <img src="<?php echo $site_url ?>static/blog/<?php echo $blog['blog_image'] ?>" />
+</div>
+<div class="blog-container px-4 z-10">
+    <div class="blog-meta pt-12">
+        <p class="text-white">Published in <a class="capitalize" href="<?php echo $_SERVER['HTTP_HOST'] ?>">
+                <?php echo $_SERVER['HTTP_HOST'] ?>
+            </a></p>
+        <h1 class="text-4xl mt-4 font-semibold text-white ">
+            <?php echo $blog['blog_title'] ?>
+        </h1>
+        <p class="text-gray-400 mt-6 text-2xl">
+            <?php echo $blog['blog_desc'] ?>
+        </p>
+    </div>
+    <div class="blog-post-content shadow-lg mt-12 rounded-xl p-8 bg-[var(--zon-body-bg-color)] ">
+        <div class="flex blog-meta-details items-center justify-between">
+            <div class="flex text-[var(--zon-common-text-color)] items-center gap-4">
+                <p class="text-[var(--zon-common-text-color)] text-lg ">
+                    By
+                    <a class="capitalize font-bold">
+                        <?php echo $zon['config']['site_name'] ?>
+                    </a>
+                </p>
+                <span>
+                    <svg width="8px" height="8px" stroke-width="3" viewBox="0 0 24 24"
+                        style="fill: var(--zon-common-text-color);" fill="#000" xmlns="http://www.w3.org/2000/svg"
+                        color="#000000">
+                        <path
+                            d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                            stroke="#000000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </span>
+                <p>
+                    August 3, 2022
+                </p>
+            </div>
+
+            <div class="social-sharing flex items-center gap-1">
+                <a target="_blank" class="hover:bg-[var(--zon-blog-social-button-bg-hover-color)] px-4 py-2 rounded-lg"
+                    href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $blog_url ?>">
+                    <svg width="20px" height="20px" stroke-width="1.0" viewBox="0 0 24 24"
+                        style="fill: var(--zon-common-text-color);" fill="#000" xmlns="http://www.w3.org/2000/svg"
+                        color="#000000">
+                        <path style="stroke: var(--zon-common-text-color);"
+                            d="M17 2H14C12.6739 2 11.4021 2.52678 10.4645 3.46447C9.52678 4.40215 9 5.67392 9 7V10H6V14H9V22H13V14H16L17 10H13V7C13 6.73478 13.1054 6.48043 13.2929 6.29289C13.4804 6.10536 13.7348 6 14 6H17V2Z"
+                            stroke="#000000" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round">
+                        </path>
+                    </svg>
+                </a>
+
+                <a target="_blank" class="hover:bg-[var(--zon-blog-social-button-bg-hover-color)] px-4 py-2 rounded-lg"
+                    href="https://twitter.com/intent/tweet?text=<?php echo $blog['blog_title'] ?> <?php echo $blog_url ?>">
+                    <svg width="20px" height="20px" stroke-width="1.5" viewBox="0 0 24 24"
+                        style="fill: var(--zon-common-text-color);" fill="#000" xmlns="http://www.w3.org/2000/svg"
+                        color="#000000">
+                        <path
+                            d="M23 3.01006C23 3.01006 20.9821 4.20217 19.86 4.54006C19.2577 3.84757 18.4573 3.35675 17.567 3.13398C16.6767 2.91122 15.7395 2.96725 14.8821 3.29451C14.0247 3.62177 13.2884 4.20446 12.773 4.96377C12.2575 5.72309 11.9877 6.62239 12 7.54006V8.54006C10.2426 8.58562 8.50127 8.19587 6.93101 7.4055C5.36074 6.61513 4.01032 5.44869 3 4.01006C3 4.01006 -1 13.0101 8 17.0101C5.94053 18.408 3.48716 19.109 1 19.0101C10 24.0101 21 19.0101 21 7.51006C20.9991 7.23151 20.9723 6.95365 20.92 6.68006C21.9406 5.67355 23 3.01006 23 3.01006Z"
+                            stroke="#000000" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round">
+                        </path>
+                    </svg>
+                </a>
+
+                <a target="_blank" class="hover:bg-[var(--zon-blog-social-button-bg-hover-color)] px-4 py-2 rounded-lg"
+                    href="https://t.me/share/url?url=<?php echo $blog_url ?>&text=<?php echo $blog['blog_desc'] ?>">
+                    <svg width="20px" height="20px" stroke-width="1.5" viewBox="0 0 24 24"
+                        style="fill: var(--zon-common-text-color);" fill="#000" xmlns="http://www.w3.org/2000/svg"
+                        color="#000000">
+                        <path style="stroke: var(--zon-common-text-color);"
+                            d="M21 5L2 12.5L9 13.5M21 5L18.5 20L9 13.5M21 5L9 13.5M9 13.5V19L12.2488 15.7229"
+                            stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        </path>
+                    </svg>
+                </a>
+                <?php if ($blog == '') { ?>
+                    <a target="_blank" class="hover:bg-[var(--zon-blog-social-button-bg-hover-color)] px-4 py-2 rounded-lg"
+                        href="#">
+                        <svg width="24px" height="24px" stroke-width="1.5" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg" color="#000000">
+                            <path style="stroke: var(--zon-common-text-color);"
+                                d="M14 11.9976C14 9.5059 11.683 7 8.85714 7C8.52241 7 7.41904 7.00001 7.14286 7.00001C4.30254 7.00001 2 9.23752 2 11.9976C2 14.376 3.70973 16.3664 6 16.8714C6.36756 16.9525 6.75006 16.9952 7.14286 16.9952"
+                                stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            </path>
+                            <path style="stroke: var(--zon-common-text-color);"
+                                d="M10 11.9976C10 14.4893 12.317 16.9952 15.1429 16.9952C15.4776 16.9952 16.581 16.9952 16.8571 16.9952C19.6975 16.9952 22 14.7577 22 11.9976C22 9.6192 20.2903 7.62884 18 7.12383C17.6324 7.04278 17.2499 6.99999 16.8571 6.99999"
+                                stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            </path>
+                        </svg>
+                    </a>
+                <?php } ?>
+            </div>
+        </div>
+        <div class="blog_main_content mt-6">
+            <?php echo $blog['blog_content'] ?>
+            <?php if (getAd('3,4', 'status') == 0) { ?>
+                <div class="p-2 mt-8 mb-4">
+                    <div class="ads wow <?php echo $zon['config']['animate_class'] ?> flex justify-center">
+                        <?php echo getAd('3,4', 'code') ?>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
+    </div>
+</div>
